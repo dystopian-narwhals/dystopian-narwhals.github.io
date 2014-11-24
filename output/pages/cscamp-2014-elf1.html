@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dystopian Narwhals, ">
+
+
+        <title>CSCamp 2014 - ELF 1 [Reversing100] // Dystopian Narwhals // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/theme/css/pure.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+<div class="sidebar pure-u">
+    <div class="cover-img" style="background-image: url('http://waa.ai/4DR5.jpg')">
+        <div class="cover-body">
+            <header class="header">
+                <hgroup>
+                    <h1 class="brand-main"><a href="/">Dystopian Narwhals</a></h1>
+                    <p class="tagline"></p>
+                    <p class="social">
+                        <a href="#">
+                            <i class="fa fa-You can add links in your config file fa-3x"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-Another social link fa-3x"></i>
+                        </a>
+                    <p>
+                </hgroup>
+            </header>
+        </div>
+    </div>
+</div>    <div class="pure-u-1">
+        <div class="content">
+            <h1 class="content-subhead">CSCamp 2014 - ELF 1 [Reversing100]</h1>
+            <p><p>In this challenge, we were given a file (binary) with no additional instructions provided.</p>
+<p>To get a better idea of what we're dealing with, we run the <code>file</code> command to get more details about the provided file.</p>
+<div class="highlight"><pre>dynadolos@dystopia$ file binary
+binary: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.24, BuildID[sha1]=215adc183a31f0c6950f8473758a329124e6c1db, not stripped
+</pre></div>
+
+
+<p>Upon running the executable, we notice that it requires us to input a password.</p>
+<div class="highlight"><pre>dynadolod@dystopia$ ./binary
+*********************************
+  welcome to cracking challenge
+*********************************
+Enter you password:
+</pre></div>
+
+
+<p>We then run strings on the file to check for any interesting strings.</p>
+<div class="highlight"><pre>dynadolos@dystopia$ strings binary
+/lib64/ld-linux-x86-64.so.2
+__gmon_start__
+libc.so.6
+exit
+__isoc99_scanf
+puts
+__stack_chk_fail
+printf
+ptrace
+__libc_start_main
+GLIBC_2.7
+GLIBC_2.4
+GLIBC_2.2.5
+fff.
+secrf
+aGVn
+YXp5f
+c2Ez
+ZA==f
+cGlu
+Zy1w
+b25n
+dH34%(
+dH34%(
+VUUU
+VUUU
+VUUU
+&lt;*~7
+&lt;=t6
+l$ L
+t$(L
+|$0H
+flag: 2cb028fec5abdc8e74994141056858d9
+*********************************
+  welcome to cracking challenge
+samir
+Flag: %s
+Enter you password:
+AAAAAAAAAAAA
+eWFfcmFnZWw=
+;*3$&quot;
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/&gt;
+?456789:;&lt;=
+ !&quot;#$%&amp;&#39;()*+,-./0123
+</pre></div>
+
+
+<p>Upon seeing the string <code>flag: 2cb028fec5abdc8e74994141056858d9</code> we tried submitting that as a flag. However, it was rejected. Looking back at the output, we noticed another interesting string: <code>Flag: %s</code>. This could potentially be the format string used to print out the actual flag.</p>
+<p>Let's take a look at any references to this string in Hopper:</p>
+<p><img alt="" src="../media/images/cscamp_2014/elf1/hexvalues.png" /></p>
+<p>Based on the disassembly, we can see that some hex values are being passed into base64_decode() before being passed to <code>printf</code> as a parameter. The flag is quite possibly the base64 decoded form of those hex values. However, why bother doing that if you can make the program do it for you?</p>
+<p><img alt="" src="../media/images/cscamp_2014/elf1/jump.png" /></p>
+<p>By looking just above the hex values, we notice that there is a jump that omits the printing of the flag. It appears that the flag will only be printed if base64_decode(???) = 'samir'. Could the unknown value be the user input? Let's find out.</p>
+<p>First, let's base64 encode the string <code>samir</code>...</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="s">&#39;samir&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;base64&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="s">&#39;c2FtaXI=&#39;</span>
+</pre></div>
+
+
+<p>and now let's try it out:</p>
+<div class="highlight"><pre>dynadolos@dystopia$ ./binary
+*********************************
+  welcome to cracking challenge
+*********************************
+Enter you password: c2FtaXI=
+Flag: ping-pong you pasamir
+</pre></div>
+
+
+<p>Looks like we solved it. We tried submitting <code>ping-pong you pasamir</code> as the flag but it was rejected. At this point, I was quite sure I had this challenge solved. After clarifying with the organizers, it turns out that all that was required was <code>ping-pong</code>.</p>
+<p>Since we have this solved, let's confirm if our earlier suspicion was indeed correct.</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">x</span> <span class="o">=</span> <span class="s">&#39;ping-pong&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;base64&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="p">[</span><span class="s">&#39;0x&#39;</span> <span class="o">+</span> <span class="n">i</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">iter</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span><span class="o">*</span><span class="mi">4</span><span class="p">))]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="p">[</span><span class="s">&#39;0x756c4763&#39;</span><span class="p">,</span> <span class="s">&#39;0x7731795a&#39;</span><span class="p">,</span> <span class="s">&#39;0x6e353262&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Yup, it's present in the earlier hex values.</p>
+<p><img alt="" src="../media/images/cscamp_2014/elf1/verify.png" /></p></p>
+        </div>
+    </div>
+</div>
+<footer class="footer">
+    <p>&copy; Dystopian Narwhals &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

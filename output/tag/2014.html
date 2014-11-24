@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dystopian Narwhals, ">
+
+
+        <title>2014 tag // Dystopian Narwhals // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/theme/css/pure.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="pure-g-r" id="layout">
+<div class="sidebar pure-u">
+    <div class="cover-img" style="background-image: url('http://neesan.org/payload.png')">
+        <div class="cover-body">
+            <header class="header">
+                <hgroup>
+                    <h1 class="brand-main"><a href="/">Dystopian Narwhals</a></h1>
+                    <p class="tagline"></p>
+                    <p class="social">
+                        <a href="#">
+                            <i class="fa fa-You can add links in your config file fa-3x"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-Another social link fa-3x"></i>
+                        </a>
+                    <p>
+                </hgroup>
+            </header>
+        </div>
+    </div>
+</div>    <div class="pure-u-1">
+        <div class="content">
+            <!-- A wrapper for all the blog posts -->
+            <div class="posts">
+                <h1 class="content-subhead">
+Posts tagged '2014'                </h1>
+<section class="post">
+    <header class="post-header">
+        <a href="/author/dynadolos.html" title="See posts by dynadolos">
+        </a>
+        <h3><a class="post-title" href="/cscamp-2014-elf1.html">CSCamp 2014 - ELF 1 [Reversing100]</a></h3>
+            <p class="post-meta"><p>In this challenge, we were given a file (binary) with no additional instructions provided.</p>
+<p>To get a better idea of what we're dealing with, we run the <code>file</code> command to get more details about the provided file.</p>
+<div class="highlight"><pre>dynadolos@dystopia$ file binary
+binary: ELF 64-bit LSB executable, x86-64, version 1 ...</pre></div></p>
+            <p class="post-meta">
+                in <a href="/category/reversing.html">reversing</a> &middot; Sun 23 November 2014
+            </p>
+    </header>
+</section><div class="pagination-wrapper content-subhead">
+    <div class="pagination">
+        <div class="pagination-left">
+                &nbsp;
+        </div>
+        <span>Page 1 / 1</span>
+        <div class="pagination-right">
+        </div>
+    </div>
+</div><footer class="footer">
+    <p>&copy; Dystopian Narwhals &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
